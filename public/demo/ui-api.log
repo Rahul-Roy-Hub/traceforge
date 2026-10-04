@@ -1,0 +1,4 @@
+Access to fetch at 'http://localhost:4000/api/items' from origin 'http://localhost:3000' has been blocked by CORS policy.
+
+GET http://localhost:4000/api/items net::ERR_FAILED
+Uncaught TypeError: Failed to fetch
