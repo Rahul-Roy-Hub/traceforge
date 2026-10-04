@@ -40,14 +40,14 @@ export function TopHeader() {
               className="flex items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-muted"
             >
               <Avatar className="size-9">
-                <AvatarFallback>L</AvatarFallback>
+                <AvatarFallback>TF</AvatarFallback>
               </Avatar>
               <span className="hidden text-left sm:block">
                 <span className="block text-sm font-semibold leading-tight">
-                  Lokesh
+                  TraceForge
                 </span>
                 <span className="block text-xs text-muted-foreground">
-                  Hackathon Mode
+                  Local workspace
                 </span>
               </span>
               <ChevronDown className="size-4 text-muted-foreground" />

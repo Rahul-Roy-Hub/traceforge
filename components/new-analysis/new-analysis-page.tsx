@@ -1,13 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ImagePlus,
   Link2,
   Clipboard,
   Sparkles,
-  WandSparkles,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
@@ -19,20 +18,28 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { exampleCards } from "@/lib/mock-data";
+import { demoExamples } from "@/lib/demo-examples";
 import { useAnalysisStore } from "@/lib/analysis-store";
 import { mapApiToAnalysis } from "@/lib/map-analysis";
-import { getAnalysisById } from "@/lib/mock-data";
-import type { Analysis } from "@/lib/schemas";
+import { parseAnalysisResponse, readApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export function NewAnalysisPage() {
+  const searchParams = useSearchParams();
+  const exampleId = searchParams.get("example") ?? "";
+  return <NewAnalysisForm key={exampleId} exampleId={exampleId} />;
+}
+
+function NewAnalysisForm({ exampleId }: { exampleId: string }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const { upsertAnalysis } = useAnalysisStore();
+  const example = demoExamples.find((item) => item.id === exampleId);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(example?.description ?? "");
+  const [logText, setLogText] = useState(example?.logText ?? "");
+  const [projectContext, setProjectContext] = useState("");
   const [urlOpen, setUrlOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -61,61 +68,82 @@ export function NewAnalysisPage() {
     }
   }
 
-  async function analyze(analysisId?: string) {
+  async function fetchImageFromUrl() {
     setError(null);
-    if (analysisId) {
-      setLoading(true);
-      window.setTimeout(() => {
-        router.push(`/analysis/${analysisId}`);
-      }, 700);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Could not download that image URL.");
+      }
+      const blob = await response.blob();
+      if (!blob.type.startsWith("image/")) {
+        throw new Error("The URL did not return a PNG, JPG, or WebP image.");
+      }
+      const extension = blob.type.split("/")[1] || "png";
+      assignFile(new File([blob], `url-screenshot.${extension}`, { type: blob.type }));
+      setUrlOpen(false);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Could not download that image URL.",
+      );
+    }
+  }
+
+  async function analyze() {
+    setError(null);
+    if (!file) {
+      setError("Upload a PNG, JPG, or WebP screenshot.");
       return;
     }
-
-    if (!file) {
-      setError("Upload a PNG, JPG, or WEBP screenshot, or pick an example.");
+    if (!description.trim()) {
+      setError("Describe what you were trying to do.");
       return;
     }
 
     setLoading(true);
     const formData = new FormData();
     formData.set("image", file);
-    formData.set(
-      "userContext",
-      description.trim() || "The build started failing after a recent change.",
-    );
+    formData.set("userContext", description.trim());
+    if (logText.trim()) formData.set("logText", logText.trim());
+    if (projectContext.trim()) {
+      formData.set("projectContext", projectContext.trim());
+    }
 
     try {
-      const response = await fetch("/api/analyze", { method: "POST", body: formData });
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        body: formData,
+      });
       if (!response.ok) {
-        throw new Error(await readError(response));
+        throw new Error(await readApiError(response));
       }
-      const data = (await response.json()) as Analysis;
+      const analysis = parseAnalysisResponse(await response.json());
       const id = `analysis-${Date.now()}`;
       upsertAnalysis(
-        mapApiToAnalysis(data, {
+        mapApiToAnalysis(analysis, {
           id,
-          description: description.trim() || "Uploaded from New Analysis.",
+          description: description.trim(),
           originalInput: {
             source: "Uploaded screenshot",
             subtitle: file.name,
-            errorLines: [data.summary],
+            errorLines: logText.trim()
+              ? logText.trim().split("\n").slice(0, 8)
+              : [analysis.summary],
           },
           imagePreview: preview ?? undefined,
         }),
       );
       router.push(`/analysis/${id}`);
     } catch (caught) {
-      const fallback = getAnalysisById("analysis-001");
-      upsertAnalysis({
-        ...fallback,
-        description: description || fallback.description,
-      });
       setError(
         caught instanceof Error
-          ? `${caught.message} Showing the demo analysis instead.`
-          : "Analysis failed. Showing the demo analysis instead.",
+          ? caught.message
+          : "Analysis failed. Check the screenshot, description, and GEMINI_API_KEY.",
       );
-      window.setTimeout(() => router.push("/analysis/analysis-001"), 900);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -125,9 +153,9 @@ export function NewAnalysisPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
           <div className="rounded-2xl border border-border bg-card px-6 py-5 text-center shadow-lg">
             <Sparkles className="mx-auto mb-2 size-6 animate-pulse text-primary" />
-            <p className="font-medium">Analyzing with Gemini 4...</p>
+            <p className="font-medium">Analyzing with Gemma 4...</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Reading the screenshot and description.
+              Reading visual evidence and correlating logs.
             </p>
           </div>
         </div>
@@ -135,13 +163,13 @@ export function NewAnalysisPage() {
 
       <PageHeader
         title="New Analysis"
-        description="Upload your screenshot, error log or describe the problem."
+        description="Upload a screenshot, paste the error log, and describe the problem. Gemma 4 analyzes the evidence."
         actions={
           <div className="max-w-xs rounded-2xl border border-border bg-primary-light/70 px-4 py-3 text-sm text-foreground">
             <span className="mr-2 inline-flex size-7 items-center justify-center rounded-lg bg-background text-primary">
               <Sparkles className="size-4" />
             </span>
-            Get instant, step-by-step fixes with explanations and resources.
+            Remove secrets before uploading screenshots or logs.
           </div>
         }
       />
@@ -172,7 +200,11 @@ export function NewAnalysisPage() {
         <p className="mt-1 text-sm text-muted-foreground">or choose an option below</p>
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="Selected screenshot" className="mx-auto mt-6 max-h-48 rounded-xl border border-border" />
+          <img
+            src={preview}
+            alt="Selected screenshot"
+            className="mx-auto mt-6 max-h-48 rounded-xl border border-border"
+          />
         ) : null}
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button type="button" onClick={() => fileRef.current?.click()}>
@@ -189,7 +221,7 @@ export function NewAnalysisPage() {
           </Button>
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          Supported: PNG, JPG, WEBP • Max 10MB
+          Supported: PNG, JPG, WEBP • Max 8MB
         </p>
         <input
           ref={fileRef}
@@ -204,33 +236,41 @@ export function NewAnalysisPage() {
       </div>
 
       <div className="mt-6 rounded-2xl border border-border bg-card p-4">
-        <div className="mb-2 flex items-center justify-between">
-          <label htmlFor="description" className="text-sm font-medium">
-            Add a description (optional)
-          </label>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="text-primary"
-            onClick={() =>
-              setDescription(
-                (current) =>
-                  current.trim() ||
-                  "Getting this error while running my React app after adding a new dependency...",
-              )
-            }
-          >
-            <WandSparkles className="size-3.5" />
-            Improve with AI
-          </Button>
-        </div>
+        <label htmlFor="description" className="text-sm font-medium">
+          What were you trying to do?
+        </label>
         <Textarea
           id="description"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          placeholder="e.g. Getting this error while running my React app after adding a new dependency..."
-          className="min-h-24"
+          placeholder="e.g. The deployment started failing after I moved a component..."
+          className="mt-2 min-h-24"
+        />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-border bg-card p-4">
+        <label htmlFor="logText" className="text-sm font-medium">
+          Error / log (optional)
+        </label>
+        <Textarea
+          id="logText"
+          value={logText}
+          onChange={(event) => setLogText(event.target.value)}
+          placeholder="Paste stack traces, terminal output, or CI logs..."
+          className="mt-2 min-h-28 font-mono"
+        />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-border bg-card p-4">
+        <label htmlFor="projectContext" className="text-sm font-medium">
+          Project context (optional)
+        </label>
+        <Textarea
+          id="projectContext"
+          value={projectContext}
+          onChange={(event) => setProjectContext(event.target.value)}
+          placeholder="Framework, repo layout, or recent changes..."
+          className="mt-2 min-h-20"
         />
       </div>
 
@@ -241,25 +281,30 @@ export function NewAnalysisPage() {
           type="button"
           size="lg"
           className="h-12 rounded-full px-8 text-base"
-          onClick={() => analyze()}
+          onClick={() => void analyze()}
         >
           <Sparkles />
-          Analyze with Gemini 4 →
+          Analyze with Gemma 4
         </Button>
       </div>
 
-      <div className="mt-10 flex items-end justify-between">
+      <div className="mt-10">
         <h2 className="text-lg font-semibold">Try an example</h2>
-        <Button variant="link" className="px-0" asChild>
-          <a href="#examples">View all examples →</a>
-        </Button>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Prefills the description and log. Upload a screenshot, then analyze with
+          Gemma 4.
+        </p>
       </div>
-      <div id="examples" className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {exampleCards.map((example) => (
+      <div id="examples" className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {demoExamples.map((example) => (
           <button
             key={example.id}
             type="button"
-            onClick={() => analyze(example.analysisId)}
+            onClick={() => {
+              setDescription(example.description);
+              setLogText(example.logText);
+              setError(null);
+            }}
             className="rounded-2xl border border-border bg-card p-3 text-left transition hover:-translate-y-0.5 hover:shadow-md"
           >
             <div className="mb-3 overflow-hidden rounded-xl bg-[#151a24] p-3 font-mono text-[11px] leading-5 text-[#d7deea]">
@@ -285,25 +330,9 @@ export function NewAnalysisPage() {
             onChange={(event) => setUrl(event.target.value)}
             placeholder="https://..."
           />
-          <Button
-            onClick={() => {
-              setPreview(url);
-              setUrlOpen(false);
-            }}
-          >
-            Use URL
-          </Button>
+          <Button onClick={() => void fetchImageFromUrl()}>Use URL</Button>
         </DialogContent>
       </Dialog>
     </div>
   );
-}
-
-async function readError(response: Response) {
-  try {
-    const data = (await response.json()) as { error?: string };
-    return data.error || `Request failed (${response.status})`;
-  } catch {
-    return `Request failed (${response.status})`;
-  }
 }

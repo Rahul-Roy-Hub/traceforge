@@ -33,19 +33,21 @@ import { useAnalysisStore } from "@/lib/analysis-store";
 
 export function HistoryPage() {
   const router = useRouter();
-  const { analyses } = useAnalysisStore();
+  const { analyses, removeAnalysis } = useAnalysisStore();
   const [query, setQuery] = useState("");
   const [range, setRange] = useState("all");
+  const [now] = useState(() => Date.now());
 
   const rows = useMemo(() => {
     return analyses.filter((item) => {
       const haystack = `${item.title} ${item.error} ${item.description} ${item.issueType}`.toLowerCase();
       if (!haystack.includes(query.toLowerCase())) return false;
-      if (range === "week") return item.date.includes("Oct");
-      if (range === "month") return item.date.includes("Sep") || item.date.includes("Oct");
+      const createdAt = item.createdAt ?? 0;
+      if (range === "week") return createdAt > now - 7 * 24 * 60 * 60 * 1000;
+      if (range === "month") return createdAt > now - 30 * 24 * 60 * 60 * 1000;
       return true;
     });
-  }, [analyses, query, range]);
+  }, [analyses, query, range, now]);
 
   return (
     <div>
@@ -87,6 +89,13 @@ export function HistoryPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                  No analyses yet. Run a live Gemma 4 analysis from New Analysis.
+                </TableCell>
+              </TableRow>
+            ) : null}
             {rows.map((item) => (
               <TableRow
                 key={item.id}
@@ -125,8 +134,12 @@ export function HistoryPage() {
                       <DropdownMenuItem onClick={() => router.push(`/analysis/${item.id}`)}>
                         Open
                       </DropdownMenuItem>
-                      <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                      <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => removeAnalysis(item.id)}
+                      >
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

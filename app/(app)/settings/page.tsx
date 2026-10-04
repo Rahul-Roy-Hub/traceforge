@@ -1,31 +1,28 @@
 import { PageHeader } from "@/components/layout/page-header";
-import { Input } from "@/components/ui/input";
 
 export default function SettingsPage() {
   return (
     <div>
       <PageHeader
         title="Settings"
-        description="Profile, preferences, and workspace defaults for this hackathon demo."
+        description="Gemma 4 runs through the Gemini API. Keep the key on the server."
       />
       <div className="grid max-w-2xl gap-4">
         <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="mb-4 font-semibold">Profile</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="text-sm">
-              Name
-              <Input className="mt-1" defaultValue="Lokesh" />
-            </label>
-            <label className="text-sm">
-              Mode
-              <Input className="mt-1" defaultValue="Hackathon Mode" />
-            </label>
-          </div>
+          <h2 className="mb-2 font-semibold">API setup</h2>
+          <p className="text-sm text-muted-foreground">
+            Set <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">GEMINI_API_KEY</code>{" "}
+            in <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">.env.local</code>{" "}
+            or the Render dashboard. Analyses call{" "}
+            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">POST /api/analyze</code>{" "}
+            with your screenshot, description, and optional log.
+          </p>
         </section>
         <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="mb-2 font-semibold">Credits</h2>
+          <h2 className="mb-2 font-semibold">Privacy</h2>
           <p className="text-sm text-muted-foreground">
-            100 credits left. This is mock data for the demo and is not billed.
+            Remove secrets, API keys, passwords, and private tokens before uploading
+            screenshots or logs. TraceForge does not store screenshots on the server.
           </p>
         </section>
       </div>

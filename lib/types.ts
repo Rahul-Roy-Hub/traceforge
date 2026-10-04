@@ -28,6 +28,12 @@ export type SkillFile = {
   content: string;
 };
 
+export type SkillValidation = {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+};
+
 export type SkillRecord = {
   id: string;
   name: string;
@@ -36,6 +42,7 @@ export type SkillRecord = {
   visibility: SkillVisibility;
   updated: string;
   files: SkillFile[];
+  validation?: SkillValidation;
 };
 
 export type OriginalInput = {
@@ -68,6 +75,7 @@ export type AnalysisRecord = {
   fixSteps: FixStep[];
   originalInput: OriginalInput;
   skillId: string;
+  createdAt: number;
   apiAnalysis?: Analysis;
 };
 
@@ -85,7 +93,8 @@ export type ExampleCard = {
   id: string;
   title: string;
   subtitle: string;
-  analysisId: string;
+  description: string;
+  logText: string;
   preview: string[];
 };
 

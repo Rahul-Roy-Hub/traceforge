@@ -25,7 +25,7 @@ const steps = [
   },
   {
     title: "AI Analysis",
-    body: "Gemini 4 understands the issue, explains the cause and suggests a fix.",
+    body: "Gemma 4 understands the issue, explains the cause and suggests a fix.",
   },
   {
     title: "Fix Plan",
@@ -64,7 +64,7 @@ export default function LandingPage() {
       <main className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-12 lg:grid-cols-2">
         <div>
           <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-light px-3 py-1 text-sm font-medium text-primary">
-            Powered by Gemini 4
+            Powered by Gemma 4
           </p>
           <h1 className="text-5xl font-bold tracking-tight text-foreground md:text-6xl">
             Turn a screenshot
@@ -74,7 +74,7 @@ export default function LandingPage() {
             a reusable <span className="text-primary">AI Skill.</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-            Upload a screenshot, error log or description. TraceForge uses Gemini 4
+            Upload a screenshot, error log or description. TraceForge uses Gemma 4
             to understand the issue, explain the cause, suggest a fix, and generate
             a reusable Agent Skill.
           </p>
@@ -86,7 +86,7 @@ export default function LandingPage() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="rounded-full">
-              <Link href="/analysis/analysis-001">View example</Link>
+              <Link href="/new-analysis">Start an analysis</Link>
             </Button>
           </div>
         </div>
@@ -151,13 +151,13 @@ export default function LandingPage() {
 
       <section id="examples" className="mx-auto max-w-6xl px-6 pb-16">
         <div className="rounded-3xl border border-border bg-muted p-8">
-          <h2 className="text-2xl font-bold">See a complete analysis</h2>
+          <h2 className="text-2xl font-bold">Run a live analysis</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground">
-            Open the GitHub Actions module resolution example to walk through diagnosis,
-            the fix plan, and the generated skill.
+            Upload a screenshot, paste a log, and let Gemma 4 produce an evidence-backed
+            diagnosis and reusable Agent Skill.
           </p>
           <Button asChild className="mt-5 rounded-full">
-            <Link href="/analysis/analysis-001">Open example analysis</Link>
+            <Link href="/new-analysis">Open New Analysis</Link>
           </Button>
         </div>
       </section>
@@ -166,8 +166,8 @@ export default function LandingPage() {
         <div className="rounded-3xl border border-border p-8">
           <h2 className="text-2xl font-bold">Hackathon access</h2>
           <p className="mt-2 text-muted-foreground">
-            This demo includes 100 mock credits. Analyze a screenshot with Gemini 4
-            when an API key is configured, or use the built-in examples.
+            Set <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">GEMINI_API_KEY</code>{" "}
+            and analyze a screenshot with Gemma 4. No mock diagnoses are shown.
           </p>
         </div>
       </section>

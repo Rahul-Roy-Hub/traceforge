@@ -104,6 +104,11 @@ export function SkillsPage() {
         </Button>
       </div>
       <SkillGrid skills={filtered} />
+      {filtered.length === 0 ? (
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          No skills yet. Generate one from a live analysis.
+        </p>
+      ) : null}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>

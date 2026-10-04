@@ -31,6 +31,7 @@ export function mapApiToAnalysis(
     status: "Completed",
     date,
     time,
+    createdAt: now.getTime(),
     error: analysis.summary,
     description: extras.description,
     confidence: (topCause?.confidence === "high"
@@ -39,35 +40,30 @@ export function mapApiToAnalysis(
         ? "Low"
         : "Medium") as AnalysisRecord["confidence"],
     issueDetected: analysis.summary,
-    whatIsHappening:
-      analysis.evidence[0]?.observation ?? analysis.summary,
-    likelyCause: topCause?.cause ?? "Needs more evidence to confirm a root cause.",
+    whatIsHappening: analysis.evidence[0]?.observation ?? analysis.summary,
+    likelyCause:
+      topCause?.cause ?? "Needs more evidence to confirm a root cause.",
     whyLikely:
       topCause?.reasoning ??
       "The diagnosis is based on the screenshot, log, and description you provided.",
     additionalContext:
       analysis.unknowns.length > 0
-        ? `Unknowns to keep in mind: ${analysis.unknowns.join(" ")}`
-        : "Cross-check bundler aliases, tsconfig paths, and recent file moves before applying the fix.",
+        ? analysis.unknowns.join(" ")
+        : "No additional unknowns were reported.",
     evidence: analysis.evidence.map((item) => item.observation),
     reproductionSteps: analysis.reproductionSteps,
-    suggestedFix: analysis.fixSteps[0] ?? "Review the suggested fix plan for detailed steps.",
+    suggestedFix:
+      analysis.fixSteps[0] ?? "Review the suggested fix plan for detailed steps.",
     validationChecklist: analysis.validationChecklist,
-    references: [
-      {
-        title: "Project configuration",
-        detail: "Compare tsconfig, bundler aliases, and import paths.",
-      },
-      {
-        title: "Framework docs",
-        detail: "Check official path alias and module resolution guidance.",
-      },
-    ],
+    references: analysis.unknowns.map((item, index) => ({
+      title: `Unknown ${index + 1}`,
+      detail: item,
+    })),
     fixSteps: analysis.fixSteps.map((step, index) => ({
       title: `Step ${index + 1}`,
       description: step,
-      filename: "Terminal",
-      language: "bash",
+      filename: "Fix step",
+      language: "text",
       code: step,
     })),
     originalInput: extras.originalInput ?? {
@@ -80,7 +76,7 @@ export function mapApiToAnalysis(
   };
 }
 
-function inferCategory(value: string): AnalysisRecord["issueType"] {
+export function inferCategory(value: string): AnalysisRecord["issueType"] {
   const lower = value.toLowerCase();
   if (lower.includes("module") || lower.includes("resolv") || lower.includes("import")) {
     return "Module Resolution";

@@ -5,12 +5,16 @@ import { Download, Save, Sparkles } from "lucide-react";
 import { AnalysisHeader } from "@/components/analysis/analysis-header";
 import { AnalysisTimeline } from "@/components/analysis/analysis-timeline";
 import { OriginalInputCard } from "@/components/analysis/original-input-card";
-import { useCurrentAnalysis } from "@/components/analysis/use-current-analysis";
+import {
+  AnalysisLoading,
+  useCurrentAnalysis,
+} from "@/components/analysis/use-current-analysis";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 
 export function AnalysisResultView({ analysisId }: { analysisId: string }) {
   const analysis = useCurrentAnalysis(analysisId);
+  if (!analysis) return <AnalysisLoading />;
 
   return (
     <div>
@@ -47,7 +51,7 @@ export function AnalysisResultView({ analysisId }: { analysisId: string }) {
             Need more help?
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Ask follow-up questions or generate a ready-to-use fix plan with Gemini 4.
+            Follow the suggested fix, then generate a reusable Agent Skill with Gemma 4.
           </p>
         </div>
         <Button asChild className="rounded-full">

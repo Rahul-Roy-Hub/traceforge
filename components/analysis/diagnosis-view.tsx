@@ -1,11 +1,16 @@
 "use client";
 
 import { EvidenceCard, ExplanationCard, IssueDetectedCard } from "@/components/analysis/explanation-cards";
-import { useCurrentAnalysis } from "@/components/analysis/use-current-analysis";
+import {
+  AnalysisLoading,
+  useCurrentAnalysis,
+} from "@/components/analysis/use-current-analysis";
 import { WorkspacePage } from "@/components/analysis/workspace-page";
 
 export function DiagnosisView({ analysisId }: { analysisId: string }) {
   const analysis = useCurrentAnalysis(analysisId);
+  if (!analysis) return <AnalysisLoading />;
+
   return (
     <WorkspacePage
       analysisId={analysisId}
@@ -17,13 +22,6 @@ export function DiagnosisView({ analysisId }: { analysisId: string }) {
         <IssueDetectedCard analysis={analysis} />
         <EvidenceCard analysis={analysis} />
         <ExplanationCard title="What is happening" icon="light" tone="warning">
-          <p>
-            The build process is trying to resolve the module{" "}
-            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[13px] text-foreground">
-              {analysis.error.replace("Cannot find module ", "").replace(/'/g, "") || "@components/Button"}
-            </code>{" "}
-            but cannot find it.
-          </p>
           <p>{analysis.whatIsHappening}</p>
         </ExplanationCard>
         <ExplanationCard title="Why this is likely" icon="target" tone="primary">

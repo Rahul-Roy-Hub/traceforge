@@ -1,11 +1,15 @@
 "use client";
 
 import { ReproductionSteps, ReferencesList, ValidationChecklist } from "@/components/analysis/supporting-cards";
-import { useCurrentAnalysis } from "@/components/analysis/use-current-analysis";
+import {
+  AnalysisLoading,
+  useCurrentAnalysis,
+} from "@/components/analysis/use-current-analysis";
 import { WorkspacePage } from "@/components/analysis/workspace-page";
 
 export function ReproductionView({ analysisId }: { analysisId: string }) {
   const analysis = useCurrentAnalysis(analysisId);
+  if (!analysis) return <AnalysisLoading />;
   return (
     <WorkspacePage
       analysisId={analysisId}
@@ -13,13 +17,18 @@ export function ReproductionView({ analysisId }: { analysisId: string }) {
       title="Reproduction"
       description="Steps that recreate the failure from the original evidence."
     >
-      <ReproductionSteps analysis={analysis} />
+      {analysis.reproductionSteps.length ? (
+        <ReproductionSteps analysis={analysis} />
+      ) : (
+        <p className="text-sm text-muted-foreground">No reproduction steps were returned.</p>
+      )}
     </WorkspacePage>
   );
 }
 
 export function ValidationView({ analysisId }: { analysisId: string }) {
   const analysis = useCurrentAnalysis(analysisId);
+  if (!analysis) return <AnalysisLoading />;
   return (
     <WorkspacePage
       analysisId={analysisId}
@@ -27,21 +36,32 @@ export function ValidationView({ analysisId }: { analysisId: string }) {
       title="Validation"
       description="Confirm the fix with a short checklist before shipping."
     >
-      <ValidationChecklist analysis={analysis} />
+      {analysis.validationChecklist.length ? (
+        <ValidationChecklist analysis={analysis} />
+      ) : (
+        <p className="text-sm text-muted-foreground">No validation checklist was returned.</p>
+      )}
     </WorkspacePage>
   );
 }
 
 export function ReferencesView({ analysisId }: { analysisId: string }) {
   const analysis = useCurrentAnalysis(analysisId);
+  if (!analysis) return <AnalysisLoading />;
   return (
     <WorkspacePage
       analysisId={analysisId}
       page="References"
       title="References"
-      description="Docs and notes that support this diagnosis."
+      description="Unknowns and gaps from the live diagnosis."
     >
-      <ReferencesList analysis={analysis} />
+      {analysis.references.length ? (
+        <ReferencesList analysis={analysis} />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          No unknowns were reported for this analysis.
+        </p>
+      )}
     </WorkspacePage>
   );
 }

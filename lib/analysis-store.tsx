@@ -5,15 +5,68 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
-import { analyses as seedAnalyses, skills as seedSkills } from "@/lib/mock-data";
 import type { AnalysisRecord, SkillRecord } from "@/lib/types";
 
+const ANALYSES_KEY = "traceforge.analyses";
+const SKILLS_KEY = "traceforge.skills";
+
+type Snapshot = {
+  analyses: AnalysisRecord[];
+  skills: SkillRecord[];
+};
+
+const emptySnapshot: Snapshot = { analyses: [], skills: [] };
+let snapshot: Snapshot = emptySnapshot;
+const listeners = new Set<() => void>();
+
+function readList<T>(key: string): T[] {
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as T[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function emit(next: Snapshot) {
+  snapshot = next;
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(ANALYSES_KEY, JSON.stringify(next.analyses));
+    window.localStorage.setItem(SKILLS_KEY, JSON.stringify(next.skills));
+  }
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function getSnapshot() {
+  return snapshot;
+}
+
+function getServerSnapshot() {
+  return emptySnapshot;
+}
+
+if (typeof window !== "undefined") {
+  snapshot = {
+    analyses: readList<AnalysisRecord>(ANALYSES_KEY),
+    skills: readList<SkillRecord>(SKILLS_KEY),
+  };
+}
+
 type Store = {
+  ready: boolean;
   analyses: AnalysisRecord[];
   skills: SkillRecord[];
   upsertAnalysis: (analysis: AnalysisRecord) => void;
+  removeAnalysis: (id: string) => void;
   getAnalysis: (id: string) => AnalysisRecord | undefined;
   getSkill: (id: string) => SkillRecord | undefined;
   upsertSkill: (skill: SkillRecord) => void;
@@ -21,50 +74,78 @@ type Store = {
 
 const AnalysisContext = createContext<Store | null>(null);
 
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
+}
+
 export function AnalysisProvider({ children }: { children: React.ReactNode }) {
-  const [analyses, setAnalyses] = useState<AnalysisRecord[]>(seedAnalyses);
-  const [skills, setSkills] = useState<SkillRecord[]>(seedSkills);
+  const ready = useIsClient();
+  const data = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const upsertAnalysis = useCallback((analysis: AnalysisRecord) => {
-    setAnalyses((current) => {
-      const index = current.findIndex((item) => item.id === analysis.id);
-      if (index === -1) return [analysis, ...current];
-      const next = [...current];
-      next[index] = analysis;
-      return next;
+    const current = snapshot.analyses;
+    const index = current.findIndex((item) => item.id === analysis.id);
+    const analyses =
+      index === -1
+        ? [analysis, ...current]
+        : current.map((item, itemIndex) =>
+            itemIndex === index ? analysis : item,
+          );
+    emit({ ...snapshot, analyses });
+  }, []);
+
+  const removeAnalysis = useCallback((id: string) => {
+    emit({
+      ...snapshot,
+      analyses: snapshot.analyses.filter((item) => item.id !== id),
     });
   }, []);
 
   const upsertSkill = useCallback((skill: SkillRecord) => {
-    setSkills((current) => {
-      const index = current.findIndex((item) => item.id === skill.id);
-      if (index === -1) return [skill, ...current];
-      const next = [...current];
-      next[index] = skill;
-      return next;
-    });
+    const current = snapshot.skills;
+    const index = current.findIndex((item) => item.id === skill.id);
+    const skills =
+      index === -1
+        ? [skill, ...current]
+        : current.map((item, itemIndex) => (itemIndex === index ? skill : item));
+    emit({ ...snapshot, skills });
   }, []);
 
   const getAnalysis = useCallback(
-    (id: string) => analyses.find((item) => item.id === id),
-    [analyses],
+    (id: string) => data.analyses.find((item) => item.id === id),
+    [data.analyses],
   );
 
   const getSkill = useCallback(
-    (id: string) => skills.find((item) => item.id === id),
-    [skills],
+    (id: string) => data.skills.find((item) => item.id === id),
+    [data.skills],
   );
 
   const value = useMemo(
     () => ({
-      analyses,
-      skills,
+      ready,
+      analyses: data.analyses,
+      skills: data.skills,
       upsertAnalysis,
+      removeAnalysis,
       getAnalysis,
       getSkill,
       upsertSkill,
     }),
-    [analyses, skills, upsertAnalysis, getAnalysis, getSkill, upsertSkill],
+    [
+      ready,
+      data.analyses,
+      data.skills,
+      upsertAnalysis,
+      removeAnalysis,
+      getAnalysis,
+      getSkill,
+      upsertSkill,
+    ],
   );
 
   return (
