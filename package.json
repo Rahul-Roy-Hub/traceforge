@@ -2,6 +2,7 @@
   "name": "traceforge",
   "version": "0.1.0",
   "private": true,
+  "description": "TraceForge — AI-powered developer debugging assistant",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
