@@ -36,7 +36,7 @@ Demo fixtures live in [`public/demo`](public/demo).
 - Original skill validator
 - Lightweight skill harness
 - ZIP export
-- Render deployment as a Node web service
+- Chrome extension that captures screenshot, console, and failed network requests
 
 ## Architecture
 
@@ -111,6 +111,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Chrome extension
+
+The extension does not open DevTools. It captures the visible tab, console errors, and failed network requests, then sends them to Gemma 4 through this app.
+
+1. Run `npm run dev` so `http://localhost:3000` is up.
+2. Open `chrome://extensions`.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the [`extension/`](extension/) folder.
+5. Open a page where a button or request fails, then click the TraceForge icon → **Trace This Issue**.
+6. Review the screenshot, URL, selected text, and console/network evidence, then **Analyze with TraceForge**.
+
+Set a deployed API origin in the extension options (gear) if you are not using localhost. The Gemini API key stays in the Next.js env, never in the extension.
+
+On restricted pages (`chrome://`, the Chrome Web Store) capture is limited; use a normal http(s) site.
+
 ## Environment Variables
 
 | Name | Required | Default | Purpose |
@@ -167,6 +182,7 @@ lib/skill-validator.ts
 lib/skill-harness.ts
 skills/
 public/demo/
+extension/
 ```
 
 ## License

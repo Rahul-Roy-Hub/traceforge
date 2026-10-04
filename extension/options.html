@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TraceForge extension settings</title>
+    <style>
+      body {
+        font-family: Inter, Segoe UI, sans-serif;
+        max-width: 560px;
+        margin: 40px auto;
+        color: #111936;
+      }
+      input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #e3e8f3;
+        border-radius: 10px;
+      }
+      button {
+        margin-top: 12px;
+        background: #5b3df5;
+        color: white;
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+      }
+      .hint {
+        color: #60709a;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="icons/logo-black.png" alt="TraceForge" style="height:48px;width:auto;display:block;margin-bottom:16px" />
+    <h1>TraceForge API</h1>
+    <p class="hint">
+      The extension never stores your Gemini key. Point it at the running TraceForge
+      app (local or deployed).
+    </p>
+    <label for="apiBase">API base URL</label>
+    <input id="apiBase" placeholder="http://localhost:3000" />
+    <button id="save" type="button">Save</button>
+    <p id="status" class="hint"></p>
+    <script src="options.js"></script>
+  </body>
+</html>

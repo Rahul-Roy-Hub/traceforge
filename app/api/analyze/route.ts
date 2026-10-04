@@ -22,11 +22,20 @@ export async function POST(request: Request) {
       return jsonError("userContext is required.");
     }
 
-    if (!(imageValue instanceof File) || imageValue.size === 0) {
+    const imageFile =
+      imageValue instanceof File
+        ? imageValue
+        : imageValue instanceof Blob
+          ? new File([imageValue], "page-screenshot.png", {
+              type: imageValue.type || "image/png",
+            })
+          : null;
+
+    if (!imageFile || imageFile.size === 0) {
       return jsonError("image is required. Upload a PNG, JPG, or WebP screenshot.");
     }
 
-    const image = await prepareImage(imageValue);
+    const image = await prepareImage(imageFile);
     const result = await analyzeIssue({
       userContext,
       logText: logText || undefined,

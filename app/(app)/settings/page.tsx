@@ -19,6 +19,18 @@ export default function SettingsPage() {
           </p>
         </section>
         <section className="rounded-2xl border border-border bg-card p-5">
+          <h2 className="mb-2 font-semibold">Chrome extension</h2>
+          <p className="text-sm text-muted-foreground">
+            Load the unpacked extension from the <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">extension/</code> folder
+            in this repo. In Chrome open <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">chrome://extensions</code>,
+            enable Developer mode, click Load unpacked, and select that folder. Keep this app running
+            at <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">http://localhost:3000</code>{" "}
+            (or set your Vercel URL in the extension options). The extension captures a screenshot,
+            console errors, and failed network requests, then calls{" "}
+            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">POST /api/analyze</code>.
+          </p>
+        </section>
+        <section className="rounded-2xl border border-border bg-card p-5">
           <h2 className="mb-2 font-semibold">Privacy</h2>
           <p className="text-sm text-muted-foreground">
             Remove secrets, API keys, passwords, and private tokens before uploading

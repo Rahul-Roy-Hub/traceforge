@@ -53,7 +53,7 @@ export function CodeBlock({
             <span className="w-6 shrink-0 select-none text-right text-white/30">
               {index + 1}
             </span>
-            <span className="whitespace-pre">{line || " "}</span>
+            <span className="min-w-0 flex-1 whitespace-pre-wrap break-all">{line || " "}</span>
           </div>
         ))}
       </pre>

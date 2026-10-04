@@ -29,7 +29,7 @@ export function SkillCodeViewer({
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-editor text-editor-foreground">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
-        <span className="inline-flex items-center gap-2 text-sm text-white/80">
+        <span className="inline-flex min-w-0 items-center gap-2 truncate text-sm text-white/80">
           <FileText className="size-4" />
           {filename}
         </span>
@@ -66,7 +66,7 @@ export function SkillCodeViewer({
               <span className="w-6 shrink-0 select-none text-right text-white/30">
                 {index + 1}
               </span>
-              <span className="whitespace-pre-wrap">{line || " "}</span>
+              <span className="min-w-0 flex-1 whitespace-pre-wrap break-all">{line || " "}</span>
             </div>
           ))}
         </pre>

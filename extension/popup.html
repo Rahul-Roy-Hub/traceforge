@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TraceForge</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="top">
+        <button id="backBtn" class="icon-btn hidden" type="button" aria-label="Back">←</button>
+        <div class="brand">
+          <img class="brand-logo" src="icons/logo-black.png" alt="TraceForge" />
+        </div>
+        <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings">⚙</button>
+      </header>
+
+      <section id="view-idle" class="view">
+        <h1>Debug from where it happens.</h1>
+        <p class="lede">
+          Capture errors, get AI analysis, and turn solutions into reusable skills.
+        </p>
+        <button id="traceBtn" class="primary" type="button">
+          Trace This Issue →
+        </button>
+        <p class="hint">
+          Keep a website tab selected (for example localhost or any http/https page).
+          chrome://extensions cannot be captured.
+        </p>
+        <ul class="bullets">
+          <li>Capture current page, errors and context automatically</li>
+          <li>Get AI-powered diagnosis and fix</li>
+          <li>Save solutions as reusable skills</li>
+        </ul>
+        <div class="recent-head">
+          <span>Recent Issues</span>
+        </div>
+        <div id="recentList" class="recent-list"></div>
+      </section>
+
+      <section id="view-capturing" class="view hidden">
+        <h1>Capturing debugging context...</h1>
+        <p class="lede">We're collecting relevant information from this page to analyze your issue.</p>
+        <ul class="checklist" id="captureList">
+          <li data-step="page"><span class="check">○</span> Page information</li>
+          <li data-step="shot"><span class="check">○</span> Screenshot</li>
+          <li data-step="text"><span class="check">○</span> Selected text</li>
+          <li data-step="console"><span class="check">○</span> Console errors</li>
+          <li data-step="context"><span class="check">○</span> Page context</li>
+        </ul>
+        <p id="captureStatus" class="status-pill">Collecting evidence...</p>
+      </section>
+
+      <section id="view-review" class="view hidden">
+        <h1>Review captured context</h1>
+        <p class="lede">Check the information below before analyzing.</p>
+        <img id="reviewShot" class="shot" alt="Page screenshot" />
+        <article class="card">
+          <div class="card-label">URL</div>
+          <p id="reviewUrl" class="mono"></p>
+        </article>
+        <article class="card">
+          <div class="card-label">Selected text</div>
+          <p id="reviewText"></p>
+        </article>
+        <article class="card card-error">
+          <div class="card-label">Console / network</div>
+          <p id="reviewErrors"></p>
+        </article>
+        <p id="reviewError" class="error hidden"></p>
+        <button id="analyzeBtn" class="primary" type="button">Analyze with TraceForge →</button>
+      </section>
+
+      <section id="view-analyzing" class="view hidden">
+        <h1>Analyzing your issue...</h1>
+        <p class="lede">
+          Our AI is reviewing the captured context, identifying the root cause, and finding the best fix.
+        </p>
+        <ul class="checklist" id="analyzeList">
+          <li data-step="understand"><span class="spin"></span> Understanding the error</li>
+          <li data-step="cause"><span class="check">○</span> Finding the root cause</li>
+          <li data-step="fix"><span class="check">○</span> Generating fix steps</li>
+          <li data-step="similar"><span class="check">○</span> Checking for similar skills</li>
+          <li data-step="prep"><span class="check">○</span> Preparing recommendations</li>
+        </ul>
+        <p class="hint">This usually takes 10–20 seconds.</p>
+      </section>
+
+      <section id="view-result" class="view hidden">
+        <div class="badge-ok">Analysis complete</div>
+        <h1>Here's what we found</h1>
+        <p class="lede">A summary of the issue and recommended fix.</p>
+        <article class="card card-error">
+          <div class="card-label">Root Cause</div>
+          <p id="resultCause"></p>
+        </article>
+        <article class="card card-ok">
+          <div class="card-label">Recommended Fix</div>
+          <p id="resultFix"></p>
+        </article>
+        <p id="resultError" class="error hidden"></p>
+        <div class="row">
+          <button id="fullAnalysisBtn" class="ghost" type="button">View Full Analysis</button>
+          <button id="saveSkillBtn" class="primary" type="button">Save as Skill</button>
+        </div>
+      </section>
+
+      <section id="view-saved" class="view hidden">
+        <div class="success-mark">✓</div>
+        <h1>Saved to Your Skill Library!</h1>
+        <p class="lede">This solution has been saved as a reusable debugging skill.</p>
+        <article class="card">
+          <div class="card-label">New Skill</div>
+          <p id="savedSkillName" class="strong"></p>
+          <p id="savedSkillDesc"></p>
+        </article>
+        <div class="row">
+          <button id="viewSkillBtn" class="ghost" type="button">View Skill</button>
+          <button id="anotherBtn" class="primary" type="button">Trace Another Issue</button>
+        </div>
+      </section>
+
+      <p id="globalError" class="error hidden"></p>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

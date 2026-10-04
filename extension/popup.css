@@ -1,0 +1,275 @@
+:root {
+  --primary: #5b3df5;
+  --primary-dark: #4a2ee0;
+  --primary-light: #f0edff;
+  --fg: #111936;
+  --muted: #60709a;
+  --border: #e3e8f3;
+  --bg: #ffffff;
+  --error: #e53935;
+  --error-bg: #fdebec;
+  --ok: #159a63;
+  --ok-bg: #e6f8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 360px;
+  min-height: 520px;
+  font-family: Inter, Segoe UI, sans-serif;
+  color: var(--fg);
+  background: #f4f6fb;
+}
+
+.shell {
+  margin: 8px;
+  padding: 16px 16px 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  min-height: 500px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.brand-logo {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+.icon-btn,
+.ghost,
+.primary {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+
+h1 {
+  font-size: 22px;
+  line-height: 1.25;
+  margin: 0 0 8px;
+}
+
+.lede {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0 0 16px;
+}
+
+.primary {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 600;
+}
+
+.primary:disabled {
+  opacity: 0.6;
+}
+
+.ghost {
+  flex: 1;
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 14px;
+  padding: 11px 12px;
+}
+
+.bullets,
+.checklist,
+.recent-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+}
+
+.bullets li,
+.checklist li {
+  display: flex;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.recent-head {
+  margin-top: 22px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.recent-item,
+.card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+
+.recent-item {
+  width: 100%;
+  text-align: left;
+  background: white;
+  cursor: pointer;
+}
+
+.recent-item small {
+  display: block;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.card-error {
+  background: var(--error-bg);
+  border-color: #f5c2c0;
+}
+
+.card-ok {
+  background: var(--ok-bg);
+  border-color: #b7e6cf;
+}
+
+.mono {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.shot {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  max-height: 140px;
+  object-fit: cover;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.row .primary,
+.row .ghost {
+  flex: 1;
+  width: auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.error {
+  color: var(--error);
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.status-pill,
+.badge-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.status-pill {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.badge-ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 16px;
+}
+
+.spin {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
+
+.check.done {
+  color: var(--ok);
+}
+
+.success-mark {
+  width: 56px;
+  height: 56px;
+  margin: 12px auto 12px;
+  border-radius: 50%;
+  background: var(--ok-bg);
+  color: var(--ok);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.strong {
+  font-weight: 700;
+  margin: 0;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

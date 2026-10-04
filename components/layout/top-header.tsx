@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ChevronDown, Moon, Sun } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { TraceForgeMark } from "@/components/brand/traceforge-logo";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -39,8 +40,8 @@ export function TopHeader() {
               type="button"
               className="flex items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-muted"
             >
-              <Avatar className="size-9">
-                <AvatarFallback>TF</AvatarFallback>
+              <Avatar className="size-9 overflow-hidden rounded-full">
+                <TraceForgeMark className="size-9 rounded-full" />
               </Avatar>
               <span className="hidden text-left sm:block">
                 <span className="block text-sm font-semibold leading-tight">

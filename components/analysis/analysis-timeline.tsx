@@ -52,14 +52,14 @@ export function AnalysisTimeline({ analysis }: { analysis: AnalysisRecord }) {
               {index === 5 ? (
                 <ul className="mt-3 space-y-2">
                   {analysis.validationChecklist.map((check) => (
-                    <li key={check} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <li key={check} className="flex items-start gap-2 text-sm break-words text-muted-foreground">
                       <Checkbox />
                       {check}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="whitespace-pre-line text-sm text-muted-foreground">{item.body}</p>
+                <p className="whitespace-pre-line break-words text-sm text-muted-foreground">{item.body}</p>
               )}
             </div>
           </div>

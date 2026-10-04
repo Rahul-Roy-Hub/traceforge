@@ -5,6 +5,7 @@ function corsHeaders(): Record<string, string> {
     "Access-Control-Allow-Origin": process.env.CORS_ORIGIN?.trim() || "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Max-Age": "86400",
   };
 }
 

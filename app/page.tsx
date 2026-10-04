@@ -8,6 +8,7 @@ import {
   Upload,
   Wrench,
 } from "lucide-react";
+import { TraceForgeLogo } from "@/components/brand/traceforge-logo";
 import { Button } from "@/components/ui/button";
 
 const features = [
@@ -41,11 +42,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-full bg-background">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <span className="inline-flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="size-4" />
-          </span>
-          TraceForge
+        <Link href="/" className="flex items-center" aria-label="TraceForge home">
+          <TraceForgeLogo className="h-14" priority />
         </Link>
         <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
           <a href="#features">Features</a>

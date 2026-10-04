@@ -6,10 +6,10 @@ import {
   BookOpen,
   Clock3,
   FilePlus2,
-  Flame,
   LayoutTemplate,
   Settings,
 } from "lucide-react";
+import { TraceForgeLogo } from "@/components/brand/traceforge-logo";
 import {
   Sidebar,
   SidebarContent,
@@ -37,13 +37,8 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-border bg-background">
       <SidebarHeader className="px-4 py-5">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="inline-flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Flame className="size-5" />
-          </span>
-          <span className="text-lg font-semibold tracking-tight text-foreground">
-            TraceForge
-          </span>
+        <Link href="/" className="flex items-center" aria-label="TraceForge home">
+          <TraceForgeLogo className="h-12" priority />
         </Link>
       </SidebarHeader>
       <SidebarContent className="px-3">
