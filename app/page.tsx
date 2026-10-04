@@ -49,7 +49,6 @@ export default function LandingPage() {
           <a href="#features">Features</a>
           <a href="#how-it-works">How it works</a>
           <a href="#examples">Examples</a>
-          <a href="#pricing">Pricing</a>
         </nav>
         <Button asChild className="rounded-full">
           <Link href="/new-analysis">
@@ -157,16 +156,6 @@ export default function LandingPage() {
           <Button asChild className="mt-5 rounded-full">
             <Link href="/new-analysis">Open New Analysis</Link>
           </Button>
-        </div>
-      </section>
-
-      <section id="pricing" className="mx-auto max-w-6xl px-6 pb-20">
-        <div className="rounded-3xl border border-border p-8">
-          <h2 className="text-2xl font-bold">Hackathon access</h2>
-          <p className="mt-2 text-muted-foreground">
-            Set <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">GEMINI_API_KEY</code>{" "}
-            and analyze a screenshot with Gemma 4. No mock diagnoses are shown.
-          </p>
         </div>
       </section>
     </div>
